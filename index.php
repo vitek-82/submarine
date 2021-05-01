@@ -343,7 +343,7 @@ class Submarine{
 		this.driveSubmarine = false;
 
 		this.submarineSurfacing = true;
-		this.rotateGunEvent = {'x': 10, 'clientY':10};
+		this.rotateGunEvent = {'x': 10, 'y':10};
 
 	};
 
@@ -430,9 +430,9 @@ class Submarine{
 		let x = this.rotateGunEvent.x - xSubmarineGun; // прилеж. катет
 		let y = this.rotateGunEvent.y - ySubmarineGun; // противолеж. катет
 
-
+// console.log('x:'+x + ' : y:'+y);
 		let a = Math.sqrt(x*x + y*y);
-		let corner = Math.tan(y/a);
+		let corner = Math.asin(y/a);
 
 		if(x < 0){corner = 3.1416-corner};
 
@@ -730,7 +730,7 @@ class NewGame{
 		this.startSubmarine.driving();
 		this.shipsCoords = {};
 		this.shipNumber = 10;
-		this.ships = 0;
+		this.ships = 10;
 		this.stopStart = null;
 		this.detonationShip = false;
 		this.start();
