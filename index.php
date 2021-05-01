@@ -349,9 +349,32 @@ class Submarine{
 
 	die(causeOfDeath){
 
-		document.body.onkeydown = function(){return false;};
-		document.body.onkeyup = function(){return false;};
+		// document.body.onkeydown = function(){return false;};
+		// document.body.onkeyup = function(){return false;};
+		
+		document.body.onmousemove = ()=>{return false;};
+		document.body.onclick = ()=>{return false;};
 
+		document.body.onkeydown = (e)=>{
+
+			switch(e.which){
+				case 37: return false; break;
+				case 39: return false; break;
+				case 38: return false; break;
+				case 40: return false; break;
+			};
+
+		};
+
+		document.body.onkeyup = (e)=>{
+			switch(e.which){
+				case 37: return false; break;
+				case 39: return false; break;
+				case 38: return false; break;
+				case 40: return false; break;
+			};
+
+		};
 		this.submarineDie = true;
 
 		this.submarine.remove();
