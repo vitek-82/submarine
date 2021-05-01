@@ -174,41 +174,6 @@ body {
 <script>
  'use strict';
 
-
-// class DetonationShip{
-
-// 	constructor(l){
-
-// 		this.stop = null;
-// 		this.arr = [[500,0],[400,0],[300,0],[200,0],[100,0],[499,204],[401,204],[303,204],[203,204],[102,204],[495,104],[397,104],[301,104],[204,104],[104,105]];
-
-// 		this.e = document.createElement('div');
-// 		this.e.className = 'detonation';
-// 		this.e.style.left = l - 10 + 'px';
-// 		this.e.style.top = innerHeight/2 - 98 + 'px';
-// 		game.startGame.area.appendChild(this.e);
-
-// 	};
-
-// 	detonation(){
-// 		let i = 0;
-// 		this.stop = setInterval(()=>{
-
-// 			if(i < 15){
-// 				this.e.style.backgroundPosition = this.arr[i][0] + 'px ' + this.arr[i][1] + 'px';
-// 				i++;
-// 			}
-// 			else{
-// 				clearInterval(this.stop);
-// 				this.e.style.opacity = 0;
-// 				i = 0;
-// 				setTimeout(()=>{this.e.remove(), delete this;}, 250);
-// 			};
-
-// 		}, 35);
-// 	};
-// };
-
 class DetonationShip{
 
 	constructor(l){
