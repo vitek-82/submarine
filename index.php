@@ -351,7 +351,7 @@ class Submarine{
 
 		// document.body.onkeydown = function(){return false;};
 		// document.body.onkeyup = function(){return false;};
-		
+
 		document.body.onmousemove = ()=>{return false;};
 		document.body.onclick = ()=>{return false;};
 
@@ -729,7 +729,7 @@ class NewGame{
 		this.startSubmarine = new Submarine();
 		this.startSubmarine.driving();
 		this.shipsCoords = {};
-		this.shipNumber = 0;
+		this.shipNumber = 10;
 		this.ships = 0;
 		this.stopStart = null;
 		this.detonationShip = false;
