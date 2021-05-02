@@ -230,22 +230,17 @@ class PlayingArea{
 		this.controling.textContent = 'mouse move - rotate gun; mouse click - fire; arrow keys - move submarine';
 		this.gameOver.id = 'gameover';
 
-
 		this.area.appendChild(this.sky);
 		this.area.appendChild(this.ocean);
 		this.area.appendChild(this.controling);
 		this.area.appendChild(this.gameOver);
 		document.body.appendChild(this.area);
 
-		// this.oceanHeight = parseInt(document.documentElement.clientHeight);
-
 		this.sky.style.height = innerHeight/2 + 'px';
 		this.ocean.style.height = innerHeight/2 + 'px';
 		this.ocean.style.top = innerHeight/2 + 'px';
 		this.gameOver.style.display = 'none';
-		// this.gameOver.style.width = 300 + 'px';
-		// this.gameOver.style.left = innerWidth/2 - parseInt(getComputedStyle(this.gameOver).width/2) + 'px';
-		this.gameOver.innerHTML = '<ul><li><span></span></li><li><p>GAME OVER</p></li><li><p>NEW GAME!</p></li></ul>';
+		this.gameOver.innerHTML = '<ul><li><span style="color: #38ff20"></span></li><li><p>GAME OVER</p></li><li><p>NEW GAME!</p></li></ul>';
 	};
 };
 
@@ -419,7 +414,6 @@ class Submarine{
 		let x = this.rotateGunEvent.x - xSubmarineGun; // прилеж. катет
 		let y = this.rotateGunEvent.y - ySubmarineGun; // противолеж. катет
 
-// console.log('x:'+x + ' : y:'+y);
 		let a = Math.sqrt(x*x + y*y);
 		let corner = Math.asin(y/a);
 
@@ -476,7 +470,7 @@ class Submarine{
 
 	driving(){
 		document.body.onmousemove = (e)=>{this.rotateGunEvent = {'x': e.clientX, 'y': e.clientY};};
-		document.body.onclick = (e)=>{new ShootSubmarine();};
+		document.body.onclick = ()=>{new ShootSubmarine();};
 
 		document.body.onkeydown = (e)=>{
 
@@ -495,6 +489,10 @@ class Submarine{
 				case 39: this.driveSubmarine = false; this.resetTransform(); break;
 				case 38: this.driveSubmarine = false; this.resetTransform(); break;
 				case 40: this.driveSubmarine = false; this.resetTransform(); break;
+				// case 37: this.driveSubmarine = false; this.resetTransform(); break;
+				// case 39: this.driveSubmarine = false; this.resetTransform(); break;
+				// case 38: this.driveSubmarine = false; this.resetTransform(); break;
+				// case 40: this.driveSubmarine = false; this.resetTransform(); break;
 			};
 
 		};
@@ -718,8 +716,8 @@ class NewGame{
 		this.startSubmarine = new Submarine();
 		this.startSubmarine.driving();
 		this.shipsCoords = {};
-		this.shipNumber = 10;
-		this.ships = 10;
+		this.shipNumber = 0;
+		this.ships = 0;
 		this.stopStart = null;
 		this.detonationShip = false;
 		this.start();
