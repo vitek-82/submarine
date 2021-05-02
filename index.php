@@ -308,8 +308,24 @@ class Submarine{
 		this.driveSubmarine = false;
 
 		this.submarineSurfacing = true;
-		this.rotateGunEvent = {'x': 10, 'y':10};
+		this.rotateGunEvent = {'x': 10, 'y': innerWidth/2};
 
+///////////////////////////////////////////////////////////////////
+		this.stopAlarm = null;
+		this.durationAlarm = null;
+		this.switchAlarm = true;
+		this.alarm = new Audio('/audio/alarm.mp3');
+		this.alarm.onloadedmetadata = function() {
+        	this.durationAlarm = this.duration;
+		};
+
+	};
+
+	turnOnTheAlarm(){
+
+		this.stopAlarm = setTimeout(()=>{
+			if(this.airAmountHeight < 6){this.alarm.play();};
+		}, this.durationAlarm);
 	};
 
 	die(causeOfDeath){
@@ -355,16 +371,20 @@ class Submarine{
 	};
 
 	amountMinus(){
-
+		
 		if(new Date() - this.airAmountDate >= 1000){
+
+			this.turnOnTheAlarm();
+
+
 			this.airAmountPlus = false;
 			this.airAmountDate = new Date();
 
-				this.submarineAirAmount.style.height = --this.airAmountHeight + 'px';
-				this.submarineAirAmount.style.top = ++this.airAmountTop + 'px';
-				this.submarineAirAmount.style.background = this.airAmountColor[this.airAmountTop];
+			this.submarineAirAmount.style.height = --this.airAmountHeight + 'px';
+			this.submarineAirAmount.style.top = ++this.airAmountTop + 'px';
+			this.submarineAirAmount.style.background = this.airAmountColor[this.airAmountTop];
 
-				this.amountMinus();
+			this.amountMinus();
 		};
 	};
 
@@ -375,7 +395,11 @@ class Submarine{
 			this.airAmountDate = new Date();
 
 			if(this.submarineTop == this.submarineStartTop){
-
+			if(this.airAmountHeight >= 6){
+				clearInterval(this.stopAlarm);
+				this.alarm.pause();
+				this.alarm.currentTime = 0;
+			};
 				this.submarineAirAmount.style.height = ++this.airAmountHeight + 'px';
 				this.submarineAirAmount.style.top = --this.airAmountTop + 'px';
 				this.submarineAirAmount.style.background = this.airAmountColor[this.airAmountTop];
@@ -481,8 +505,8 @@ class Submarine{
 
 class ShootSubmarine{
 	constructor(){
-			new Audio('/audio/1.mp3').play();
-			this.defence = new Audio('/audio/defence.mp3');
+			new Audio('/audio/shootsubmarine.mp3').play();
+			
 			this.cancelAnimationShoot = null;
 			this.cornerRad = 0.0175;
 			this.skyTop = -50;
@@ -518,7 +542,7 @@ class ShootSubmarine{
 							cancelAnimationFrame(this.cancelAnimationShoot);
 							this.shoot.remove();
 							delete this;
-							this.defence.play();
+							new Audio('/audio/defence.mp3').play();
 							game.detonationShip = new DetonationShip(game.shipsCoords[i].left);
 
 							clearInterval(game.shipsCoords[i].shipStop);
