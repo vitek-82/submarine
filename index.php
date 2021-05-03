@@ -152,6 +152,10 @@ body {
     background: rgba(0, 0, 0, 0.49);
     margin: 2px;
     padding: 0px 5px;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    cursor: default;
 }
 
 
@@ -162,13 +166,39 @@ body {
     height: 100px;
     background-image: url(/images/detonation.png);
     background-position: 0px 0px;
-    transition: opacity 0.2s linear;
+    opacity: 0.5;
+    transition: opacity 0.5s linear;
 }
+
+#alarmmessage {
+    position: fixed;
+    left: 40%;
+    top: 50px;
+    background: red;
+    width: 200px;
+    font-size: 1.6em;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 10px;
+    animation: alarmmes 0.5s infinite linear;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    cursor: default;
+}
+
+@keyframes alarmmes{
+	0%{opacity: 0.4}
+	50%{opacity: 0.3}
+	100%{opacity: 0.4}
+}
+
+
 	</style>
 
 </head>
 
-<body>
+<body ondragstart="return false">
 
 
 <script>
@@ -200,11 +230,12 @@ class DetonationShip{
 				this.i++;
 			}
 			else{
+
 				this.stop = false;
 				clearInterval(this.stop);
 				this.e.style.opacity = 0;
 				this.i = 0;
-				setTimeout(()=>{this.e.remove(), delete this;}, 250);
+				setTimeout(()=>{this.e.remove(), delete this; game.detonationShip.shift();}, 250);
 			};
 		};
 
@@ -260,15 +291,25 @@ class Submarine{
 		this.submarineAirBlock = document.createElement('div');
 		this.submarineAirAmount = document.createElement('div');
 
+////////////////////////////////////////////////////////////////
+		this.alarmMessage = document.createElement('div');
+		this.alarmMessage.id = 'alarmmessage';
+		this.alarmMessage.textContent = 'Not enough AIR, float to the surface!';
+		this.alarmMessageSwitch = true;
+////////////////////////////////////////////////////////////////
+
+
 		this.submarine.id = 'submarine';
 		this.submarineImg.src = '/images/submarine.png';
 		this.submarineImg.setAttribute('width', '100');
+
 		this.submarineImg.className = 'submarinemove';
 		this.submarineGun.id = 'gun';
 		// this.submarineGun.style.transform = 'transform: rotate(0deg)';
 		this.submarineLight.id = 'light';
 		this.submarineAirBlock.id = 'airblock';
 		this.submarineAirAmount.id = 'airamount';
+
 
 		this.airAmountHeight = 15;
 		this.airAmountTop = 0;
@@ -305,7 +346,6 @@ class Submarine{
 		this.submarineSurfacing = true;
 		this.rotateGunEvent = {'x': 10, 'y': innerWidth/2};
 
-///////////////////////////////////////////////////////////////////
 		this.stopAlarm = null;
 		this.durationAlarm = null;
 		this.switchAlarm = true;
@@ -319,17 +359,39 @@ class Submarine{
 	turnOnTheAlarm(){
 
 		this.stopAlarm = setTimeout(()=>{
-			if(this.airAmountHeight < 6){this.alarm.play();};
+			if(this.airAmountHeight < 6){
+
+//////////////////////////////////////////////////////////////////////////////////////
+				if(this.alarmMessageSwitch){
+					this.alarmMessageSwitch = false;
+					document.querySelector('#sky').appendChild(this.alarmMessage);
+				};
+//////////////////////////////////////////////////////////////////////////////////////
+
+				this.alarm.play();
+			};
 		}, this.durationAlarm);
 	};
 
 	die(causeOfDeath){
 
-		// document.body.onkeydown = function(){return false;};
-		// document.body.onkeyup = function(){return false;};
+		this.submarineDie = true;
+		this.submarine.remove();
+		delete this.submarine;
+		
+		for(let d in game.shipsCoords){
+			clearInterval(game.shipsCoords[d].shipStop);
+			game.shipsCoords[d].ship.remove();
+			delete game.shipsCoords[d];
+		};
+
+		if(this.alarmMessage)this.alarmMessage.remove();
+
+		game.startGame.gameOver.querySelector('span').textContent = causeOfDeath;
+		game.startGame.gameOver.style.display = 'block';
 
 		document.body.onmousemove = ()=>{return false;};
-		document.body.onclick = ()=>{return false;};
+		document.body.onmousedown = ()=>{return false;};
 
 		document.body.onkeydown = (e)=>{
 
@@ -351,18 +413,6 @@ class Submarine{
 			};
 
 		};
-		this.submarineDie = true;
-
-		this.submarine.remove();
-		delete this.submarine;
-
-		for(let d in game.shipsCoords){
-			clearInterval(game.shipsCoords[d].shipStop);
-			game.shipsCoords[d].ship.remove();
-			delete game.shipsCoords[d];
-		};
-		game.startGame.gameOver.querySelector('span').textContent = causeOfDeath;
-		game.startGame.gameOver.style.display = 'block';
 	};
 
 	amountMinus(){
@@ -370,7 +420,6 @@ class Submarine{
 		if(new Date() - this.airAmountDate >= 1000){
 
 			this.turnOnTheAlarm();
-
 
 			this.airAmountPlus = false;
 			this.airAmountDate = new Date();
@@ -390,16 +439,22 @@ class Submarine{
 			this.airAmountDate = new Date();
 
 			if(this.submarineTop == this.submarineStartTop){
-			if(this.airAmountHeight >= 6){
-				clearInterval(this.stopAlarm);
-				this.alarm.pause();
-				this.alarm.currentTime = 0;
-			};
-				this.submarineAirAmount.style.height = ++this.airAmountHeight + 'px';
-				this.submarineAirAmount.style.top = --this.airAmountTop + 'px';
-				this.submarineAirAmount.style.background = this.airAmountColor[this.airAmountTop];
+				if(this.airAmountHeight >= 6){
 
-				this.amountPlus();
+//////////////////////////////////////////////////////////////////////////////
+					this.alarmMessageSwitch = true;
+					this.alarmMessage.remove();
+//////////////////////////////////////////////////////////////////////////////
+
+					clearInterval(this.stopAlarm);
+					this.alarm.pause();
+					this.alarm.currentTime = 0;
+				};
+					this.submarineAirAmount.style.height = ++this.airAmountHeight + 'px';
+					this.submarineAirAmount.style.top = --this.airAmountTop + 'px';
+					this.submarineAirAmount.style.background = this.airAmountColor[this.airAmountTop];
+
+					this.amountPlus();
 			};
 		};
 	};
@@ -470,7 +525,7 @@ class Submarine{
 
 	driving(){
 		document.body.onmousemove = (e)=>{this.rotateGunEvent = {'x': e.clientX, 'y': e.clientY};};
-		document.body.onclick = ()=>{new ShootSubmarine();};
+		document.body.onmousedown = ()=>{new ShootSubmarine();};
 
 		document.body.onkeydown = (e)=>{
 
@@ -489,10 +544,6 @@ class Submarine{
 				case 39: this.driveSubmarine = false; this.resetTransform(); break;
 				case 38: this.driveSubmarine = false; this.resetTransform(); break;
 				case 40: this.driveSubmarine = false; this.resetTransform(); break;
-				// case 37: this.driveSubmarine = false; this.resetTransform(); break;
-				// case 39: this.driveSubmarine = false; this.resetTransform(); break;
-				// case 38: this.driveSubmarine = false; this.resetTransform(); break;
-				// case 40: this.driveSubmarine = false; this.resetTransform(); break;
 			};
 
 		};
@@ -540,8 +591,9 @@ class ShootSubmarine{
 							cancelAnimationFrame(this.cancelAnimationShoot);
 							this.shoot.remove();
 							delete this;
-							new Audio('/audio/defence.mp3').play();
-							game.detonationShip = new DetonationShip(game.shipsCoords[i].left);
+
+							new Audio('/audio/defence.mp3').play();					
+							game.detonationShip.push(new DetonationShip(game.shipsCoords[i].left));
 
 							clearInterval(game.shipsCoords[i].shipStop);
 							game.shipsCoords[i].ship.remove();
@@ -621,7 +673,7 @@ class Ship{
 
 				if(this.left + this.width > game.startSubmarine.submarineLeft && this.left < game.startSubmarine.submarineLeft + game.startSubmarine.submarineWidth){
 					if(game.startSubmarine.submarineTop < this.top +  this.height){
-						cancelAnimationFrame(stop); // останавливаем подлодку
+						// столкновение с кораблём
 						game.startSubmarine.die('Collision with a ship!');
 					};
 				};
@@ -647,7 +699,7 @@ class Ship{
 			else{
 				if(this.left + this.width > game.startSubmarine.submarineLeft && this.left < game.startSubmarine.submarineLeft + game.startSubmarine.submarineWidth){
 					if(game.startSubmarine.submarineTop < this.top +  this.height){
-						cancelAnimationFrame(stop); // останавливаем подлодку
+						// столкновение с кораблём
 						game.startSubmarine.die('Collision with a ship!');
 					};
 				};
@@ -699,7 +751,7 @@ class ShipShoot{
 					if(this.shootLeft > game.startSubmarine.submarineLeft && this.shootLeft < game.startSubmarine.submarineLeft + game.startSubmarine.submarineWidth){// если столкновение по оси X
 						clearInterval(this.shootStop);
 						this.shoot.remove();
-
+						// столкновение с миной корабля
 						game.startSubmarine.die('Submarine destroyed by mine!');
 					}
 				};
@@ -717,9 +769,9 @@ class NewGame{
 		this.startSubmarine.driving();
 		this.shipsCoords = {};
 		this.shipNumber = 0;
-		this.ships = 0;
+		this.ships = 10;
 		this.stopStart = null;
-		this.detonationShip = false;
+		this.detonationShip = [];
 		this.start();
 	};
 
@@ -739,16 +791,13 @@ class NewGame{
 	};
 };
 
-
-let game = new NewGame();
-let stop = null;
-stop = requestAnimationFrame(render);
-
 function render(){
 
 	game.startSubmarine.moveGun();
 
-	if(game.detonationShip.stop){game.detonationShip.detonation();};
+	if(game.detonationShip.length){
+		game.detonationShip.forEach(function(v){if(v.stop){v.detonation();};});
+	};
 
 	if(game.startSubmarine.driveSubmarine){game.startSubmarine.moveSubmarine();};
 
@@ -757,8 +806,8 @@ function render(){
 			game.startSubmarine.amountMinus();
 		}
 		else{
+			// закончился воздух
 			game.startSubmarine.die('ran out of air!');
-			
 		};
 	}
 	else{
@@ -767,33 +816,13 @@ function render(){
 		};
 	};
 
-
-	stop = requestAnimationFrame(render);
+	if(!game.startSubmarine.submarineDie){stop = requestAnimationFrame(render);}
+	else{cancelAnimationFrame(stop);};
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+let game = new NewGame();
+let stop = requestAnimationFrame(render);
 
 </script>
-
-
-
-
-
-
-
 </body>
 </html>
