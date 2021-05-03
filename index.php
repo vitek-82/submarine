@@ -482,16 +482,17 @@ class Submarine{
 
 	moveSubmarine(){
 
-		switch(this.directionSubmarine){
-			case 1: this.submarine.style.transform = 'rotate(-3deg)';
+		if(!this.submarineDie){
+			switch(this.directionSubmarine){
+				case 1: this.submarine.style.transform = 'rotate(-3deg)';
 					this.submarine.style.left = --this.submarineLeft + 'px';
 					break;
 
-			case 2: this.submarine.style.transform = 'rotate(3deg)';
+				case 2: this.submarine.style.transform = 'rotate(3deg)';
 					this.submarine.style.left = ++this.submarineLeft + 'px';
 					break;
 
-			case 3: 
+				case 3: 
 					this.submarine.style.transform = 'rotate(-5deg)';
 					if(this.submarineSurfacing){
 						if(this.submarineTop == this.submarineStartTop){
@@ -508,7 +509,7 @@ class Submarine{
 					};
 					break;
 
-			case 4: this.submarine.style.transform = 'rotate(5deg)';
+				case 4: this.submarine.style.transform = 'rotate(5deg)';
 					this.submarineSurfacing = true;
 					if(this.airAmountMove){
 						this.airAmountMove = true;
@@ -517,6 +518,7 @@ class Submarine{
 
 					this.submarine.style.top = ++this.submarineTop + 'px';
 					break;
+			};
 		};
 	};
 
